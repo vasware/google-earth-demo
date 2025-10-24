@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,7 +8,9 @@
     <script src="https://cesium.com/downloads/cesiumjs/releases/1.111/Build/Cesium/Cesium.js"></script>
     <link href="https://cesium.com/downloads/cesiumjs/releases/1.111/Build/Cesium/Widgets/widgets.css" rel="stylesheet">
     <style>
-        html, body, #cesiumContainer {
+        html,
+        body,
+        #cesiumContainer {
             width: 100%;
             height: 100%;
             margin: 0;
@@ -15,11 +18,11 @@
             overflow: hidden;
             font-family: Arial, sans-serif;
         }
-        
+
         #cesiumContainer {
             position: relative;
         }
-        
+
         .loading {
             position: absolute;
             top: 50%;
@@ -29,8 +32,8 @@
             font-size: 18px;
             z-index: 1000;
         }
-        
-        
+
+
         .error {
             position: absolute;
             top: 50%;
@@ -44,7 +47,7 @@
             border-radius: 5px;
             z-index: 1000;
         }
-        
+
         .api-loading {
             position: absolute;
             top: 20px;
@@ -56,7 +59,7 @@
             font-size: 14px;
             z-index: 1000;
         }
-        
+
         .marker-count {
             position: absolute;
             top: 20px;
@@ -70,6 +73,7 @@
         }
     </style>
 </head>
+
 <body>
     <div id="cesiumContainer">
         <div class="loading" id="loading">Loading Google Earth...</div>
@@ -91,63 +95,63 @@
         async function initializeViewer() {
             try {
                 viewer = new Cesium.Viewer('cesiumContainer', {
-                terrainProvider: await Cesium.CesiumTerrainProvider.fromIonAssetId(1),
-                imageryProvider: new Cesium.GoogleEarthEnterpriseImageryProvider({
-                    url: 'https://earth.google.com/web/',
-                    channel: 1,
-                    version: 1,
-                    requestType: 'ImageryMaps',
-                    bbox: [-180, -90, 180, 90],
-                    format: 'png'
-                }),
-                baseLayerPicker: true,
-                geocoder: true,
-                homeButton: true,
-                sceneModePicker: true,
-                navigationHelpButton: true,
-                animation: true,
-                timeline: true,
-                fullscreenButton: true,
-                vrButton: false,
-                selectionIndicator: true,
-                infoBox: true,
-                scene3DOnly: false,
-                shouldAnimate: true
-            });
+                    terrainProvider: await Cesium.CesiumTerrainProvider.fromIonAssetId(1),
+                    imageryProvider: new Cesium.GoogleEarthEnterpriseImageryProvider({
+                        url: 'https://earth.google.com/web/',
+                        channel: 1,
+                        version: 1,
+                        requestType: 'ImageryMaps',
+                        bbox: [-180, -90, 180, 90],
+                        format: 'png'
+                    }),
+                    baseLayerPicker: true,
+                    geocoder: true,
+                    homeButton: true,
+                    sceneModePicker: true,
+                    navigationHelpButton: true,
+                    animation: true,
+                    timeline: true,
+                    fullscreenButton: true,
+                    vrButton: false,
+                    selectionIndicator: true,
+                    infoBox: true,
+                    scene3DOnly: false,
+                    shouldAnimate: true
+                });
 
-            // Hide the loading message
-            document.getElementById('loading').style.display = 'none';
+                // Hide the loading message
+                document.getElementById('loading').style.display = 'none';
 
-            // Set initial camera position to polygon area
-            const polygonCoordinates = [
-                [144.97414462677202,-37.80102882726442],
-                [144.97000329605302,-37.800791461768725],
-                [144.96968143097124,-37.80318203655827],
-                [144.96794335952958,-37.80301249479613],
-                [144.9683081399556,-37.80067277873483],
-                [144.96320121399125,-37.80029977367253],
-                [144.96251456848344,-37.807547397902205],
-                [144.9637161981221,-37.810131613495315],
-                [144.97058265320024,-37.80789384149249],
-                [144.97339360824785,-37.80857196138209]
-            ];
+                // Set initial camera position to polygon area
+                const polygonCoordinates = [
+                    [144.97414462677202, -37.80102882726442],
+                    [144.97000329605302, -37.800791461768725],
+                    [144.96968143097124, -37.80318203655827],
+                    [144.96794335952958, -37.80301249479613],
+                    [144.9683081399556, -37.80067277873483],
+                    [144.96320121399125, -37.80029977367253],
+                    [144.96251456848344, -37.807547397902205],
+                    [144.9637161981221, -37.810131613495315],
+                    [144.97058265320024, -37.80789384149249],
+                    [144.97339360824785, -37.80857196138209]
+                ];
 
 
 
-            // Enable 3D buildings
-            enable3DBuildings();
+                // Enable 3D buildings
+                enable3DBuildings();
 
-            // Add polygon area
-            addPolygonArea();
+                // Add polygon area
+                addPolygonArea();
 
-            // Add observation markers
-            addObservationMarkers();
+                // Add observation markers
+                addObservationMarkers();
 
-            // Configure marker visibility settings
-            configureMarkerVisibility();
+                // Configure marker visibility settings
+                configureMarkerVisibility();
 
-            // Handle errors
-            viewer.cesiumWidget.cesiumInspector = false;
+                // Handle errors
+                viewer.cesiumWidget.cesiumInspector = false;
 
             } catch (error) {
                 console.error('Error initializing Cesium:', error);
@@ -170,27 +174,27 @@
                     },
                     mode: 'cors'
                 });
-                
+
                 console.log('Response status:', response.status);
                 console.log('Response headers:', response.headers);
-                
+
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
-                
+
                 const data = await response.json();
                 console.log('API Data received:', data);
                 console.log('Data structure:', JSON.stringify(data, null, 2));
-                
+
                 return data;
             } catch (error) {
                 console.error('Error fetching observation data:', error);
                 console.error('Error details:', error.message);
-                
+
                 // Show error message to user
                 document.getElementById('apiLoading').innerHTML = 'Error loading data: ' + error.message;
                 document.getElementById('apiLoading').style.color = '#ff4444';
-                
+
                 // Return sample data for testing if API fails
                 console.log('Using sample data for testing...');
                 return {
@@ -236,10 +240,10 @@
         async function addObservationMarkers() {
             // Show API loading indicator
             document.getElementById('apiLoading').style.display = 'block';
-            
+
             const data = await fetchObservationData();
             console.log('Raw API response:', data);
-            
+
             // Check different possible data structures
             let observations = null;
             if (data && data.data && Array.isArray(data.data.observations)) {
@@ -273,7 +277,7 @@
             const limitedObservations = observations.slice(0, 30);
             console.log(`Adding ${limitedObservations.length} markers to the map`);
             console.log('First observation:', limitedObservations[0]);
-            
+
             // Hide API loading and show marker count
             document.getElementById('apiLoading').style.display = 'none';
             document.getElementById('markerCount').style.display = 'block';
@@ -292,17 +296,17 @@
             let markersAdded = 0;
             limitedObservations.forEach((observation, index) => {
                 console.log(`Processing observation ${index + 1}:`, observation);
-                
+
                 // Check if observation has coordinates
                 if (observation.lat && observation.lng) {
                     console.log(`Adding marker for observation ${index + 1} at lat: ${observation.lat}, lng: ${observation.lng}`);
-                    
+
                     const color = colors[index % colors.length];
-                    
+
                     // Extract first capital letter from common name or species
                     const nameToUse = observation.common_name || observation.species || `Obs ${index + 1}`;
                     const firstLetter = nameToUse.match(/[A-Z]/)?.[0] || nameToUse.charAt(0).toUpperCase();
-                    
+
                     const markerUrl = createTeardropMarker(color, 40, firstLetter);
 
                     // Create billboard entity
@@ -337,7 +341,7 @@
                             ${observation.created_at ? `<p><strong>Date:</strong> ${new Date(observation.created_at).toLocaleDateString()}</p>` : ''}
                         </div>
                     `;
-                    
+
                     markersAdded++;
                 } else {
                     console.log(`Skipping observation ${index + 1} - no valid coordinates:`, observation);
@@ -352,17 +356,17 @@
             // Ensure entities are always visible
             viewer.scene.globe.enableLighting = false;
             viewer.scene.fog.enabled = false;
-            
+
             // Set up camera controls for better marker visibility
             viewer.camera.minimumZoomDistance = 10;
             viewer.camera.maximumZoomDistance = 10000000;
-            
+
             // Configure scene settings for better marker visibility
             viewer.scene.globe.enableLighting = false;
             viewer.scene.globe.showGroundAtmosphere = false;
-            
+
             // Add event listener for camera changes to ensure markers stay visible
-            viewer.camera.moveEnd.addEventListener(function() {
+            viewer.camera.moveEnd.addEventListener(function () {
                 // Force entities to be visible
                 viewer.entities.values.forEach(entity => {
                     if (entity.billboard) {
@@ -373,7 +377,7 @@
                     }
                 });
             });
-            
+
             console.log('Marker visibility settings configured');
         }
 
@@ -385,16 +389,16 @@
                     `https://tile.googleapis.com/v1/3dtiles/root.json?key=${GOOGLE_API_KEY}`
                 );
                 viewer.scene.primitives.add(googleBuildings);
-                
+
                 // Enable shadows for better 3D effect
                 viewer.shadows = true;
                 viewer.scene.globe.enableLighting = true;
-                
+
                 // Set sun position for better lighting
                 viewer.scene.sun.show = true;
                 viewer.scene.moon.show = true;
                 viewer.scene.skyBox.show = true;
-                
+
                 console.log('Google 3D Buildings loaded successfully');
             } catch (error) {
                 console.error('Error loading Google 3D buildings:', error);
@@ -402,16 +406,16 @@
                 try {
                     osmBuildings = await Cesium.Cesium3DTileset.fromIonAssetId(96188);
                     viewer.scene.primitives.add(osmBuildings);
-                    
+
                     // Enable shadows for better 3D effect
                     viewer.shadows = true;
                     viewer.scene.globe.enableLighting = true;
-                    
+
                     // Set sun position for better lighting
                     viewer.scene.sun.show = true;
                     viewer.scene.moon.show = true;
                     viewer.scene.skyBox.show = true;
-                    
+
                     console.log('Fallback OSM Buildings loaded');
                 } catch (fallbackError) {
                     console.error('All 3D building sources failed:', fallbackError);
@@ -420,65 +424,107 @@
         }
 
         // Function to add polygon area
-        function addPolygonArea() {
+        async function addPolygonArea() {
             const polygonCoordinates = [
-                [144.97414462677202,-37.80102882726442],
-                [144.97000329605302,-37.800791461768725],
-                [144.96968143097124,-37.80318203655827],
-                [144.96794335952958,-37.80301249479613],
-                [144.9683081399556,-37.80067277873483],
-                [144.96320121399125,-37.80029977367253],
-                [144.96251456848344,-37.807547397902205],
-                [144.9637161981221,-37.810131613495315],
-                [144.97058265320024,-37.80789384149249],
-                [144.97339360824785,-37.80857196138209]
+                [144.97414462677202, -37.80102882726442],
+                [144.97000329605302, -37.800791461768725],
+                [144.96968143097124, -37.80318203655827],
+                [144.96794335952958, -37.80301249479613],
+                [144.9683081399556, -37.80067277873483],
+                [144.96320121399125, -37.80029977367253],
+                [144.96251456848344, -37.807547397902205],
+                [144.9637161981221, -37.810131613495315],
+                [144.97058265320024, -37.80789384149249],
+                [144.97339360824785, -37.80857196138209],
+                [144.97414462677202, -37.80102882726442] // close the loop ✅
             ];
 
-            // Convert coordinates to Cesium format
-            const positions = polygonCoordinates.map(coord => 
+            const positions = polygonCoordinates.map(coord =>
                 Cesium.Cartesian3.fromDegrees(coord[0], coord[1])
             );
 
-            // Add polygon entity with no top/bottom surfaces
-            viewer.entities.add({
-                polygon: {
-                    hierarchy: positions,
-                    material: Cesium.Color.YELLOW.withAlpha(0.5),
-                    outline: true,
-                    outlineColor: Cesium.Color.YELLOW,
-                    height: 0,
-                    extrudedHeight: 100,
-                    closeTop: false,
-                    closeBottom: false
-                }
+            const wallGeometry = new Cesium.WallGeometry({
+                positions: positions,
+                maximumHeights: new Array(positions.length).fill(300), // top
+                minimumHeights: new Array(positions.length).fill(0)    // bottom
             });
 
-            // Calculate center point for camera positioning
-            const centerLongitude = polygonCoordinates.reduce((sum, coord) => sum + coord[0], 0) / polygonCoordinates.length;
-            const centerLatitude = polygonCoordinates.reduce((sum, coord) => sum + coord[1], 0) / polygonCoordinates.length;
+            const wallInstance = new Cesium.GeometryInstance({
+                geometry: wallGeometry
+            });
 
-            // Calculate offset to center the polygon with -45° pitch
-            const offsetDistance = -0.01; // Adjust this value to fine-tune centering
+            // ✨ Gradient from bottom (yellow) to top (purple)
+            const hologramMaterial = new Cesium.Material({
+  fabric: {
+    type: 'Color',
+    uniforms: {
+      gridSpacing: 10.0, // adjust grid density (larger = fewer lines)
+    },
+    source: `
+      czm_material czm_getMaterial(czm_materialInput materialInput)
+      {
+        czm_material material = czm_getDefaultMaterial(materialInput);
+
+        // UV coordinates (used for grid)
+        vec2 st = materialInput.st;
+        float grad = clamp(st.t, 0.0, 1.0);
+
+        // Base dark blue color
+        vec3 baseColor = vec3(0.0, 0.1, 0.3);  // deep navy
+
+        float alpha = mix(0.5, 0.0, grad);
+
+        material.diffuse = baseColor;
+        material.alpha = alpha;
+
+        return material;
+      }
+    `
+  }
+});
+
+
+
+            const wallPrimitive = new Cesium.Primitive({
+                geometryInstances: [wallInstance],
+                appearance: new Cesium.MaterialAppearance({
+                    translucent: true,
+                    material: hologramMaterial,
+                    closed: false
+                }),
+                asynchronous: false
+            });
+
+            viewer.scene.primitives.add(wallPrimitive);
+
+            // Camera focus
+            const centerLongitude = polygonCoordinates.reduce((sum, c) => sum + c[0], 0) / polygonCoordinates.length;
+            const centerLatitude = polygonCoordinates.reduce((sum, c) => sum + c[1], 0) / polygonCoordinates.length;
+            const offsetDistance = -0.01;
             const offsetLatitude = centerLatitude + offsetDistance;
 
-            // Set camera to focus on the polygon area from behind
             viewer.camera.setView({
-                destination: Cesium.Cartesian3.fromDegrees(centerLongitude, offsetLatitude, 1000),
+                destination: Cesium.Cartesian3.fromDegrees(centerLongitude, offsetLatitude, 1500),
                 orientation: {
                     heading: Cesium.Math.toRadians(0.0),
                     pitch: Cesium.Math.toRadians(-45.0),
                     roll: 0.0
                 }
             });
+
+            console.log("Gradient wall polygon added successfully.");
         }
 
 
+
+
         // Handle window resize
-        window.addEventListener('resize', function() {
+        window.addEventListener('resize', function () {
             if (viewer) {
                 viewer.resize();
             }
         });
     </script>
 </body>
+
 </html>
